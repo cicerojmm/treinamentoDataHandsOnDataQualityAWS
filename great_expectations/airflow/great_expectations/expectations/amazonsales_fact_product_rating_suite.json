@@ -1,0 +1,41 @@
+{
+  "expectation_suite_name": "amazonsales_fact_product_rating_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": { "column": "product_id" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "product_id" }
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": { "column": "product_name" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "product_name" }
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_be_between",
+      "kwargs": {
+        "column": "product_name",
+        "min_value": 3
+      }
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": { "column": "avg_rating" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "avg_rating",
+        "min_value": 0.0,
+        "max_value": 5.0,
+        "mostly": 1.0
+      }
+    }
+  ]
+}

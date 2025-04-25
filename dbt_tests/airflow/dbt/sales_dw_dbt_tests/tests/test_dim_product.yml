@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: dim_product
+    description: "Dimensão de produtos extraída de stg_sales_eph"
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+      - name: product_name
+        tests:
+          - not_null
+      - name: category
+        tests:
+          - not_null

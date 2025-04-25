@@ -1,0 +1,29 @@
+checks for dim_product:
+  - schema:
+      fail:
+        when required column missing: [product_id, product_name, category, about_product, img_link, product_link]
+
+  - missing_count(product_id) = 0:
+      fail: when > 0
+
+  - missing_count(product_name) = 0:
+      fail: when > 0
+
+  - duplicate_count(product_id) = 0:
+      warn: when > 0
+
+  - invalid_percent(category) < 5%:
+      warn: when > 5%
+      fail: when > 10%
+      valid values: ["Electronics", "Books", "Clothing", "Toys", "Home", "Beauty"]
+
+  - invalid_percent(img_link) = 0:
+      fail: when > 0
+      valid regex: "^https?://.*\\.(jpg|jpeg|png|gif)$"
+
+  - invalid_percent(product_link) = 0:
+      fail: when > 0
+      valid regex: "^https?://.*$"
+
+  - missing_count(about_product) < 10%:
+      warn: when > 10%

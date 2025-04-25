@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: fact_product_rating
+    description: "Tabela com a média de avaliações por produto."
+    columns:
+      - name: product_id
+        description: "Identificador único do produto."
+        tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        description: "Nome do produto."
+        tests:
+          - not_null
+
+      - name: avg_rating
+        description: "Média das avaliações do produto, que deve estar entre 0 e 5."
+        tests:
+          - test_column_values_between:
+              column_name: avg_rating
+              min_value: 0
+              max_value: 3

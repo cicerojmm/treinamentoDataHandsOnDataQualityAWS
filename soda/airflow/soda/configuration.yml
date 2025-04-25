@@ -1,0 +1,8 @@
+data_source amazonsales:
+  type: redshift
+  host: datahandson-dq-redshift-cluster.cmg5exvjwio5.us-east-1.redshift.amazonaws.com
+  username: awsuser
+  password: Admin123
+  database: amazonsales
+  schema: public
+  region: us-east-1

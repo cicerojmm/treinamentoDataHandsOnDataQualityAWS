@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: dim_user
+    description: "Dimensão de usuários extraída de stg_sales_eph"
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+      - name: user_name
+        tests:
+          - not_null

@@ -1,0 +1,19 @@
+checks for dim_user:
+  - schema:
+      fail:
+        when required column missing: [user_id, user_name]
+
+  - missing_count(user_id) = 0:
+      fail: when > 0
+
+  - duplicate_count(user_id) = 0:
+      warn: when > 0
+
+  - missing_count(user_name) < 5%:
+      warn: when > 5%
+      fail: when > 10%
+
+  - invalid_percent(user_name) < 5%:
+      warn: when > 5%
+      fail: when > 10%
+      valid regex: "^[A-Za-zÀ-ÖØ-öø-ÿ\\s'-]+$"

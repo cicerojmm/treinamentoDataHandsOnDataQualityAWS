@@ -1,0 +1,79 @@
+# datasources:
+#   redshift:
+#     class_name: SqlAlchemyDatasource
+#     credentials:
+#       drivername: postgresql
+#       host: "redshift-cluster-2.cmg5exvjwio5.us-east-1.redshift.amazonaws.com"
+#       port: 5439
+#       username: "awsuser"
+#       password: "Admin123"
+#       database: "amazonsales"
+# great_expectations.yml
+
+config_version: 3.0
+
+datasources:
+  postgres_default_configured_sql_datasource:
+    class_name: Datasource
+    module_name: great_expectations.datasource
+    execution_engine:
+      class_name: SqlAlchemyExecutionEngine
+      module_name: great_expectations.execution_engine
+      connection_string: 
+        postgresql+psycopg2://awsuser:Admin123@datahandson-dq-redshift-cluster.cmg5exvjwio5.us-east-1.redshift.amazonaws.com:5439/amazonsales
+      create_temp_table: true
+    data_connectors:
+      default_configured_asset_sql_data_connector:
+        class_name: ConfiguredAssetSqlDataConnector
+        module_name: great_expectations.datasource.data_connector
+        assets:
+          fact_sales_category:
+            class_name: Asset
+            module_name: great_expectations.datasource.data_connector.asset
+            schema_name: public
+            batch_identifiers:
+              - airflow_run_id
+expectations_store_name: expectations_store
+validations_store_name: validations_store
+evaluation_parameter_store_name: evaluation_parameter_store
+checkpoint_store_name: checkpoint_store
+
+stores:
+  expectations_store:
+    class_name: ExpectationsStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: ./expectations/
+
+
+  validations_store:
+    class_name: ValidationsStore
+    store_backend:
+      class_name: InMemoryStoreBackend
+
+  evaluation_parameter_store:
+    class_name: EvaluationParameterStore
+  checkpoint_store:
+    class_name: CheckpointStore
+    store_backend:
+      class_name: InMemoryStoreBackend
+
+data_docs_sites:
+  local_site:
+    class_name: SiteBuilder
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: great_expectations/uncommitted/data_docs/local_site/
+    site_index_builder:
+      class_name: DefaultSiteIndexBuilder
+
+anonymous_usage_statistics:
+  data_context_id: 6c4709f6-7872-4042-ab51-739973ae8d6e
+  enabled: false
+plugins_directory:
+notebooks:
+config_variables_file_path:
+include_rendered_content:
+  globally: false
+  expectation_suite: false
+  expectation_validation_result: false

@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: dim_rating
+    description: "Tabela contendo reviews de produtos"
+    columns:
+      - name: rating
+        tests:
+          - test_assert_valid_rating

@@ -1,0 +1,22 @@
+{
+    "Comment": "Geração da OBT AmazonSales e Testes com Soda",
+    "StartAt": "CreateAmazonSalesOBT",
+    "States": {
+      "CreateAmazonSalesOBT": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": " data-hands-on-dq-soda-tests-amazonsales-obt"
+        },
+        "Next": "TestsSodaAmazonSalesOBT"
+      },
+      "TestsSodaAmazonSalesOBT": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "data-hands-on-dq-soda-tests-amazonsales"
+        },
+        "End": true
+      }
+    }
+  }

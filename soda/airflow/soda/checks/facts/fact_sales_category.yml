@@ -1,0 +1,14 @@
+checks for fact_sales_category:
+  - schema:
+      fail:
+        when required column missing: [user_id, category, sales_amount]
+        
+  - missing_count(user_id) = 0:
+      fail: when > 0
+  - missing_count(category) = 0:
+      fail: when > 0
+
+  - missing_count(sales_amount) < 5%:
+      warn: when > 5%
+  - min(sales_amount) >= 0:
+      fail: when < 0

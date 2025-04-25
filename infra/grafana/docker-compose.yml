@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=postgres:5432
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=grafana
+      - GF_DATABASE_PASSWORD=grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - grafana_network
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=grafana
+      - POSTGRES_USER=grafana
+      - POSTGRES_PASSWORD=grafana
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - grafana_network
+
+volumes:
+  grafana_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  grafana_network:
+    driver: bridge

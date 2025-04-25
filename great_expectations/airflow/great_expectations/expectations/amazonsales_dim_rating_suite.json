@@ -1,0 +1,47 @@
+{
+  "expectation_suite_name": "amazonsales_dim_rating_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {"column": "user_id"}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {"column": "user_id"}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {"column": "product_id"}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {"column": "product_id"}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {"column": "rating"}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "rating",
+        "min_value": 0.0,
+        "max_value": 5.0,
+        "strict_min": false,
+        "strict_max": false
+      }
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {"column": "rating_count"}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "rating_count",
+        "min_value": 0,
+        "strict_min": false
+      }
+    }
+  ]
+}

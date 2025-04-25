@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: fact_sales_category 
+    description: "Fato de vendas agregadas por usuário e categoria de produto"
+    columns:
+      - name: user_id
+        description: "Identificador único do usuário"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_user')
+              field: user_id
+
+      - name: category
+        description: "Categoria do produto"
+        tests:
+          - not_null
+
+      - name: sales_amount
+        description: "Total de vendas em reais para o par user_id e category"
+        tests:
+          - not_null
+          - test_sales_amount_range
+

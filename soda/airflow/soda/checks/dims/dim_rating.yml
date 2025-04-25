@@ -1,0 +1,30 @@
+checks for dim_rating:
+  - schema:
+      fail:
+        when required column missing: [user_id, product_id, rating, rating_count]
+
+  - missing_count(user_id) = 0:
+      fail: when > 0
+
+  - missing_count(product_id) = 0:
+      fail: when > 0
+
+  - duplicate_count(user_id, product_id) = 0:
+      warn: when > 0
+
+  - invalid_percent(rating) < 5%:
+      warn: when > 5%
+      fail: when > 10%
+      valid min: 0
+      valid max: 5
+
+  - missing_count(rating) < 10%:
+      warn: when > 10%
+  
+  - invalid_percent(rating_count) < 5%:
+      warn: when > 5%
+      fail: when > 10%
+      valid min: 0
+
+  - missing_count(rating_count) < 10%:
+      warn: when > 10%

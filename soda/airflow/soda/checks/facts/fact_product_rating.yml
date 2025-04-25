@@ -1,0 +1,16 @@
+checks for fact_product_rating:
+  - schema:
+      fail:
+        when required column missing: [product_id, product_name, avg_rating]
+
+  - missing_count(product_id) = 0:
+      fail: when > 0
+  - missing_count(product_name) = 0:
+      fail: when > 0
+
+  - min(avg_rating) >= 0:
+      fail: when < 0
+      warn: when < 0
+  - max(avg_rating) <= 5:
+      fail: when > 5
+      warn: when > 5
