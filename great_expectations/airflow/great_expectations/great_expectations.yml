@@ -1,15 +1,3 @@
-# datasources:
-#   redshift:
-#     class_name: SqlAlchemyDatasource
-#     credentials:
-#       drivername: postgresql
-#       host: "redshift-cluster-2.cmg5exvjwio5.us-east-1.redshift.amazonaws.com"
-#       port: 5439
-#       username: "awsuser"
-#       password: "Admin123"
-#       database: "amazonsales"
-# great_expectations.yml
-
 config_version: 3.0
 
 datasources:
@@ -19,8 +7,6 @@ datasources:
     execution_engine:
       class_name: SqlAlchemyExecutionEngine
       module_name: great_expectations.execution_engine
-      connection_string: 
-        postgresql+psycopg2://awsuser:Admin123@datahandson-dq-redshift-cluster.cmg5exvjwio5.us-east-1.redshift.amazonaws.com:5439/amazonsales
       create_temp_table: true
     data_connectors:
       default_configured_asset_sql_data_connector:

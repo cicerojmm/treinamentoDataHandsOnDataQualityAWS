@@ -10,7 +10,14 @@ from os.path import join
 from pyspark.context import SparkContext
 from pyspark.sql import SparkSession
 from awsglue.context import GlueContext
-from pyspark.sql.types import StructType, StructField, StringType, BooleanType, IntegerType, DoubleType
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    StringType,
+    BooleanType,
+    IntegerType,
+    DoubleType,
+)
 
 yaml = YAMLHandler()
 
@@ -29,8 +36,8 @@ datasource_yaml = f"""
                 - some_other_key_maybe_airflow_run_id
     """
 
-suite_name = 'suite_tests_amazon_sales_data'
-suite_profile_name = 'profile_amazon_sales_data'
+suite_name = "suite_tests_amazon_sales_data"
+suite_profile_name = "profile_amazon_sales_data"
 
 
 def config_data_docs_site(context, output_path):
@@ -41,11 +48,9 @@ def config_data_docs_site(context, output_path):
             "class_name": "SiteBuilder",
             "store_backend": {
                 "class_name": "TupleS3StoreBackend",
-                "bucket": output_path.replace("s3://", "")
+                "bucket": output_path.replace("s3://", ""),
             },
-            "site_index_builder": {
-                "class_name": "DefaultSiteIndexBuilder"
-            }
+            "site_index_builder": {"class_name": "DefaultSiteIndexBuilder"},
         }
     }
 
@@ -55,9 +60,7 @@ def config_data_docs_site(context, output_path):
 def create_context_ge(output_path):
     context = ge.get_context()
 
-    context.add_expectation_suite(
-        expectation_suite_name=suite_name
-    )
+    context.add_expectation_suite(expectation_suite_name=suite_name)
 
     context.add_datasource(**yaml.load(datasource_yaml))
     config_data_docs_site(context, output_path)
@@ -78,8 +81,7 @@ def create_validator(context, suite, df):
     )
 
     df_validator: Validator = context.get_validator(
-        batch_request=runtime_batch_request,
-        expectation_suite=suite
+        batch_request=runtime_batch_request, expectation_suite=suite
     )
 
     return df_validator
@@ -87,51 +89,66 @@ def create_validator(context, suite, df):
 
 def add_tests_suite(df_validator):
     columns_list = [
-        "product_id", "product_name", "category", "discounted_price", "actual_price",
-        "discount_percentage", "rating", "rating_count", "about_product", "user_id",
-        "user_name", "review_id", "review_title", "review_content", "img_link", "product_link"
+        "product_id",
+        "product_name",
+        "category",
+        "discounted_price",
+        "actual_price",
+        "discount_percentage",
+        "rating",
+        "rating_count",
+        "about_product",
+        "user_id",
+        "user_name",
+        "review_id",
+        "review_title",
+        "review_content",
+        "img_link",
+        "product_link",
     ]
-    
+
     # Validação da estrutura da tabela
     df_validator.expect_table_columns_to_match_ordered_list(columns_list)
-    
+
     # Unicidade e não-nulos para chaves
     df_validator.expect_column_values_to_be_unique("product_id")
     df_validator.expect_column_values_to_not_be_null("product_id")
-    
+
     # Valores entre faixas esperadas
-    df_validator.expect_column_values_to_be_between("discount_percentage", min_value=0, max_value=100)
+    df_validator.expect_column_values_to_be_between(
+        "discount_percentage", min_value=0, max_value=100
+    )
     df_validator.expect_column_values_to_be_between("rating", min_value=0, max_value=5)
     df_validator.expect_column_values_to_be_between("actual_price", min_value=0.01)
     df_validator.expect_column_values_to_be_between("discounted_price", min_value=0.01)
     df_validator.expect_column_values_to_be_between("rating_count", min_value=0)
-    
+
     # Tipo esperado para rating_count
     df_validator.expect_column_values_to_be_of_type("rating_count", "IntegerType")
-    
+
     # Formato esperado para links
     df_validator.expect_column_values_to_match_regex(
         column="product_link",
-        regex=r'^https:\/\/www\.[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}$',
-        mostly=0.9
+        regex=r"^https:\/\/www\.[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}$",
+        mostly=0.9,
     )
-    
+
     df_validator.expect_column_values_to_match_regex(
-        column="img_link",
-        regex=r'^https:\/\/.*\.(jpg|jpeg|png|webp)$'
+        column="img_link", regex=r"^https:\/\/.*\.(jpg|jpeg|png|webp)$"
     )
-    
+
     # Formato esperado para IDs
     df_validator.expect_column_values_to_match_regex("review_id", r"^[a-zA-Z0-9_-]+$")
     df_validator.expect_column_values_to_match_regex("user_id", r"^[a-zA-Z0-9_-]+$")
     df_validator.expect_column_values_to_match_regex("product_id", r"^[a-zA-Z0-9_-]+$")
-    
+
     # Tamanho de textos
-    df_validator.expect_column_value_lengths_to_be_between("review_title", min_value=3, max_value=100)
-    
+    df_validator.expect_column_value_lengths_to_be_between(
+        "review_title", min_value=3, max_value=100
+    )
+
     # Cardinalidade composta
     df_validator.expect_compound_columns_to_be_unique(["product_id", "product_name"])
-    
 
     return df_validator
 
@@ -143,11 +160,15 @@ def add_profile_suite(context, df_ge):
 
 
 def create_spark_session(app_name="spark-app"):
-    return (SparkSession.builder
-        .appName("CuratedLayer")
+    return (
+        SparkSession.builder.appName("CuratedLayer")
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-        .getOrCreate())
+        .config(
+            "spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        )
+        .getOrCreate()
+    )
 
 
 def read_data(spark, file_path):
@@ -160,12 +181,12 @@ def process_results_gx(spark, gx_result):
     # Extração dos dados do resultado
     run_name = gx_result["run_id"]["run_name"]
     result_data = list(gx_result["run_results"].values())[0]["validation_result"]
-    
+
     validation_time = result_data["meta"]["validation_time"]
     batch_info = result_data["meta"]["active_batch_definition"]
     expectation_results = result_data["results"]
     success_percent = result_data["statistics"]["success_percent"]
-    
+
     # Criação da lista de dicionários
     rows = [
         {
@@ -181,23 +202,30 @@ def process_results_gx(spark, gx_result):
         }
         for e in expectation_results
     ]
-    
+
     # Definir o schema (opcional, mas recomendado para tipos explícitos)
-    schema = StructType([
-        StructField("run_name", StringType(), True),
-        StructField("validation_time", StringType(), True),
-        StructField("data_asset_name", StringType(), True),
-        StructField("expectation_type", StringType(), True),
-        StructField("column", StringType(), True),
-        StructField("success", BooleanType(), True),
-        StructField("element_count", IntegerType(), True),
-        StructField("unexpected_count", IntegerType(), True),
-        StructField("success_percent", DoubleType(), True),
-    ])
-    
+    schema = StructType(
+        [
+            StructField("run_name", StringType(), True),
+            StructField("validation_time", StringType(), True),
+            StructField("data_asset_name", StringType(), True),
+            StructField("expectation_type", StringType(), True),
+            StructField("column", StringType(), True),
+            StructField("success", BooleanType(), True),
+            StructField("element_count", IntegerType(), True),
+            StructField("unexpected_count", IntegerType(), True),
+            StructField("success_percent", DoubleType(), True),
+        ]
+    )
+
     # Criar o DataFrame PySpark
     result_df = spark.createDataFrame(rows, schema=schema)
     print(result_df.show(5, False))
+    result_df.write.parquet(
+        "s3://cjmm-datalake-curated/mds_data_quality_results/gx_amazonsales_glue_etl/",
+        mode="append",
+    )
+
 
 def process_suite_ge(spark, input_path, output_path):
     df = read_data(spark, f"{input_path}/data-hands-on-df-soda-amazon-sales-obt/")
@@ -207,7 +235,8 @@ def process_suite_ge(spark, input_path, output_path):
     context = create_context_ge(output_path)
 
     suite: ExpectationSuite = context.get_expectation_suite(
-        expectation_suite_name=suite_name)
+        expectation_suite_name=suite_name
+    )
 
     add_profile_suite(context, df_ge)
 
@@ -216,19 +245,19 @@ def process_suite_ge(spark, input_path, output_path):
 
     results = df_validator.validate(expectation_suite=suite)
     context.build_data_docs(site_names=["s3_site"])
-    
-    #process_results_gx(spark, results)
-    
+
+    process_results_gx(spark, results)
+
     print(results)
-    if results['success']:
-        print("A suite de testes foi executada com sucesso: " +
-              str(results['success']))
+    if not results["success"]:
+        print("A suite de testes foi executada com sucesso: " + str(results["success"]))
         print("Ação de validação caso seja necessário")
+        Exception()
 
 
 if __name__ == "__main__":
-    input_path = 's3://cjmm-datalake-curated'
-    output_path = 's3://datadocs-greatexpectations.cjmm'
+    input_path = "s3://cjmm-datalake-curated"
+    output_path = "s3://datadocs-greatexpectations.cjmm"
 
     spark = create_spark_session()
     process_suite_ge(spark, input_path, output_path)

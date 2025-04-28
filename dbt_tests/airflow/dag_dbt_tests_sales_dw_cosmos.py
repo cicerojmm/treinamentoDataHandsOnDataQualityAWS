@@ -25,7 +25,7 @@ DB_NAME = "amazonsales"
 SCHEMA_NAME = "public"
 
 # ROOT_PATH = "/opt/airflow/dags"
-ROOT_PATH = "/usr/local/airflow/dags"
+ROOT_PATH = "/usr/local/airflow/dags" #MWAA
 DBT_PROJECT_PATH = f"{ROOT_PATH}/dbt/sales_dw_dbt_tests"
 
 profile_config = ProfileConfig(
@@ -94,7 +94,7 @@ def dag_dbt_tests_sales_dw_cosmos():
             should_detach_multiple_parents_tests=True, #não falhar tasks seguintes
         ),
         default_args={"retries": 0},
-        on_warning_callback=warning_callback_func,
+        #on_warning_callback=warning_callback_func,
     )
 
     start_process >> transform_data

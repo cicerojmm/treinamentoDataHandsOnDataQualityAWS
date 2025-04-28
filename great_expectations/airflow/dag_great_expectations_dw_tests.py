@@ -68,11 +68,11 @@ def process_gx_result(asset_name: str, **kwargs):
     ]
 
     df = pd.DataFrame(rows)
-    utils.salvar_dados_s3(
-        df,
-        "cjmm-datalake-curated",
-        f"mds_data_quality_results/gx_amazonsales_airflow/{uuid.uuid4().hex}.parquet",
-    )
+    # utils.salvar_dados_s3(
+    #     df,
+    #     "cjmm-datalake-curated",
+    #     f"mds_data_quality_results/gx_amazonsales_airflow/{uuid.uuid4().hex}.parquet",
+    # )
 
     # Retorna o dataframe em forma de dict para uso posterior
     return df.to_dict(orient="records")
