@@ -15,7 +15,6 @@ from utils import utils
 POSTGRES_CONN_ID = "postgres_default"
 MY_POSTGRES_SCHEMA = "public"
 # MY_GX_DATA_CONTEXT = "/opt/airflow/dags/great_expectations"
-# MY_GX_DATA_CONTEXT = "/usr/local/airflow/dags/great_expectations"#MWAA
 MY_GX_DATA_CONTEXT = "/tmp/great_expectations"
 
 ASSETS = [
@@ -68,11 +67,11 @@ def process_gx_result(asset_name: str, **kwargs):
     ]
 
     df = pd.DataFrame(rows)
-    # utils.salvar_dados_s3(
-    #     df,
-    #     "cjmm-datalake-curated",
-    #     f"mds_data_quality_results/gx_amazonsales_airflow/{uuid.uuid4().hex}.parquet",
-    # )
+    utils.salvar_dados_s3(
+        df,
+        "cjmm-datalake-mds-curated",
+        f"mds_data_quality_results/gx_amazonsales_airflow/{uuid.uuid4().hex}.parquet",
+    )
 
     # Retorna o dataframe em forma de dict para uso posterior
     return df.to_dict(orient="records")
@@ -90,74 +89,10 @@ def aggregate_results(**kwargs):
     df = pd.DataFrame(all_results)
     utils.salvar_dados_s3(
         df,
-        "cjmm-datalake-curated",
+        "cjmm-datalake-mds-curated",
         f"mds_data_quality_results/gx_amazonsales_airflow/final_{uuid.uuid4().hex}.parquet",
     )
 
-
-# import uuid
-# import os
-# import shutil
-# import boto3
-# from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-# from great_expectations_provider.operators.great_expectations import (
-#     GreatExpectationsOperator,
-# )
-# from great_expectations_provider.operators.great_expectations import (
-#     GreatExpectationsDataDocsLink,
-# )
-
-# MY_GX_DATA_CONTEXT_S3 = "s3://cjmm-datalake-mwaa/dags/great_expectations/"
-# S3_CONN_ID = "aws_default"
-
-
-# class MyGXOperator(GreatExpectationsOperator, GreatExpectationsDataDocsLink):
-#     def __init__(self, *args, **kwargs):
-#         # Gera um UUID para evitar conflito entre execuções
-#         self.unique_id = str(uuid.uuid4())
-
-#         # Define origem (S3) e destino (/tmp)
-#         self.source_dir = MY_GX_DATA_CONTEXT_S3
-#         self.target_dir = f"/tmp/great_expectations/"
-
-#         # Baixa os arquivos do S3 para o diretório local
-#         self._sync_from_s3()
-
-#         # Define o contexto local como parâmetro do operador
-#         kwargs["data_context_root_dir"] = self.target_dir
-
-#         super().__init__(*args, **kwargs)
-
-#     def _sync_from_s3(self):
-#         s3_hook = S3Hook(aws_conn_id=S3_CONN_ID)
-#         bucket, prefix = self._parse_s3_url(self.source_dir)
-
-#         # Lista todos os arquivos
-#         file_keys = s3_hook.list_keys(bucket_name=bucket, prefix=prefix)
-
-#         if not file_keys:
-#             raise ValueError(f"Nenhum arquivo encontrado no S3: {self.source_dir}")
-
-#         for file_key in file_keys:
-#             relative_path = os.path.relpath(file_key, prefix)
-#             local_path = os.path.join(self.target_dir, relative_path)
-
-#             # Cria diretórios necessários
-#             os.makedirs(os.path.dirname(local_path), exist_ok=True)
-
-#             # Sobrescreve sempre
-#             s3_hook.download_file(
-#                 bucket_name=bucket, key=file_key, local_path=local_path
-#             )
-
-#     def _parse_s3_url(self, s3_url):
-#         """Extrai bucket e prefixo de uma URL S3 (ex: s3://bucket/prefix)"""
-#         if not s3_url.startswith("s3://"):
-#             raise ValueError(f"URL S3 inválida: {s3_url}")
-#         parts = s3_url.replace("s3://", "").split("/", 1)
-#         bucket = parts[0]
-#         prefix = parts[1] if len(parts) > 1 else ""
-#         return bucket, prefix
 
 import shutil, os
 

@@ -5,7 +5,7 @@ x-airflow-common:
   environment:
     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
     - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgres@postgres:5432/airflow
-    - AIRFLOW__CORE__FERNET_KEY=FB0o_zt4e3Ziq3LdUUO7F2Z95cvFFx16hU8jTeR1ASM=
+    - AIRFLOW__CORE__FERNET_KEY=<fernet_key>
     - AIRFLOW__CORE__LOAD_EXAMPLES=False
     - AIRFLOW__CORE__LOGGING_LEVEL=INFO
   volumes:

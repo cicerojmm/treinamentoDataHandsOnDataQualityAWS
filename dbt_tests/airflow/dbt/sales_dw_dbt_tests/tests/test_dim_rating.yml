@@ -7,3 +7,4 @@ models:
       - name: rating
         tests:
           - test_assert_valid_rating
+

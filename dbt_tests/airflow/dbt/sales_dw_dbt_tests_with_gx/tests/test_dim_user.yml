@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: dim_user
+    description: "Dimensão de usuários extraída de stg_sales_eph"
+
+    tests:
+      - dbt_expectations.expect_table_column_count_to_equal:  # 🧼 Validade + 🔐 Conformidade
+          value: 2
+
+      - dbt_expectations.expect_table_row_count_to_be_between:  # 🎯 Completude
+          min_value: 100
+          max_value: 1000000
+
+      - dbt_expectations.expect_table_columns_to_match_set:  # 🧼 Validade + 🔐 Conformidade
+          column_list: ["user_id", "user_name"]
+
+    columns:
+      - name: user_id
+        description: "Identificador único do usuário"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null  # 🎯 Completude
+
+      - name: user_name
+        description: "Nome do usuário"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null  # 🎯 Completude
+          - dbt_expectations.expect_column_value_lengths_to_be_between:  # 🧼 Validade
+              min_value: 1
+              max_value: 10000

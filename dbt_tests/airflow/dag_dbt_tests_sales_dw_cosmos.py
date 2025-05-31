@@ -94,7 +94,7 @@ def dag_dbt_tests_sales_dw_cosmos():
             should_detach_multiple_parents_tests=True, #não falhar tasks seguintes
         ),
         default_args={"retries": 0},
-        #on_warning_callback=warning_callback_func,
+        on_warning_callback=warning_callback_func,
     )
 
     start_process >> transform_data

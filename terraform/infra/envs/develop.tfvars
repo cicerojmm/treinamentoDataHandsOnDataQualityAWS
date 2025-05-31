@@ -1,0 +1,5 @@
+environment = "dev"
+region = "us-east-1"
+s3_bucket_raw = "cjmm-datalake-mds-raw"
+s3_bucket_scripts = "cjmm-datalake-mds-configs"
+s3_bucket_curated = "cjmm-datalake-mds-curated"

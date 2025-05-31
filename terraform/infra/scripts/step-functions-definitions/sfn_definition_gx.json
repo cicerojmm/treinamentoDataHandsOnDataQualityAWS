@@ -1,0 +1,22 @@
+{
+  "Comment": "Geração da OBT AmazonSales e Testes com GX",
+  "StartAt": "CreateAmazonSalesOBT",
+  "States": {
+    "CreateAmazonSalesOBT": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "data-hands-on-dq-gx-tests-amazonsales-obt"
+      },
+      "Next": "TestsGXAmazonSalesOBT"
+    },
+    "TestsGXAmazonSalesOBT": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": {
+        "JobName": "data-hands-on-dq-amazonsales-gx-tests"
+      },
+      "End": true
+    }
+  }
+}

@@ -14,3 +14,20 @@ checks for fact_product_rating:
   - max(avg_rating) <= 5:
       fail: when > 5
       warn: when > 5
+
+
+  - sql_metric:
+      name: rating_negativo
+      query: |
+        SELECT COUNT(*) 
+        FROM fact_product_rating
+        WHERE avg_rating < 0
+      fail: when > 0
+
+  - sql_metric:
+      name: nome_em_branco
+      query: |
+        SELECT COUNT(*) 
+        FROM fact_product_rating
+        WHERE TRIM(product_name) = ''
+      warn: when > 0

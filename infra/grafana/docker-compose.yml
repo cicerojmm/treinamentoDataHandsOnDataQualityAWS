@@ -9,12 +9,12 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_PASSWORD=<admin_password>
       - GF_DATABASE_TYPE=postgres
       - GF_DATABASE_HOST=postgres:5432
       - GF_DATABASE_NAME=grafana
       - GF_DATABASE_USER=grafana
-      - GF_DATABASE_PASSWORD=grafana
+      - GF_DATABASE_PASSWORD=<db_password>
     volumes:
       - grafana_data:/var/lib/grafana
     networks:

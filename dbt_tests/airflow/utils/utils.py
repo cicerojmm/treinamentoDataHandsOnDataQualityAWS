@@ -15,7 +15,7 @@ def get_aws_credentials():
 
 
 def enviar_notificacao_sns(origem, pipeline, validacao, detalhes):
-    topic_arn = "arn:aws:sns:us-east-1:668305110822:DHdataQualityAlerts"
+    topic_arn = "arn:aws:sns:us-east-1:<account>:data-handson-dq-alerts-dev"
     message_data = {
         "origem": origem,
         "pipeline": pipeline,

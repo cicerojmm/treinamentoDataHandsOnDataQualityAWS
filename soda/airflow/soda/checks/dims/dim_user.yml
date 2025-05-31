@@ -16,4 +16,4 @@ checks for dim_user:
   - invalid_percent(user_name) < 5%:
       warn: when > 5%
       fail: when > 10%
-      valid regex: "^[A-Za-zÀ-ÖØ-öø-ÿ\\s'-]+$"
+      valid regex: "^[A-Za-zÀ-ÖØ-öø-ÿ\\s''-]+$"

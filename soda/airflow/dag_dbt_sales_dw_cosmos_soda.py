@@ -70,7 +70,7 @@ def gravar_resultados_soda_s3(data):
     df = pd.DataFrame(checks_data)
     df["datetime"] = datetime_tests
 
-    s3_bucket = "cjmm-datalake-curated"
+    s3_bucket = "cjmm-datalake-mds-curated"
     s3_path = (
         f"mds_data_quality_results/soda_amazonsales_airflow/{uuid.uuid4().hex}.parquet"
     )

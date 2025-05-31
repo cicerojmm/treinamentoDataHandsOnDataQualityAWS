@@ -1,0 +1,5 @@
+astronomer-cosmos
+soda-core-redshift
+airflow-provider-great-expectations
+pyarrow
+python-dotenv

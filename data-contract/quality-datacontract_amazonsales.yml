@@ -1,0 +1,104 @@
+dataContractSpecification: 1.1.0
+id: my-data-contract-id
+info:
+  title: My Data Contract
+  version: 0.0.1
+servers:
+  production:
+    type: s3
+    location: s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/{model}
+    format: delta
+    endpointUrl: s3.us-east-1.amazonaws.com
+
+models:
+  dim_product:
+    type: table
+    fields:
+      product_id:
+        type: string
+      product_name:
+        type: string
+      category:
+        type: string
+      about_product:
+        type: string
+      img_link:
+        type: string
+      product_link:
+        type: string
+    quality:
+      - type: sql
+        description: Verifica se há pelo menos 10.000 produtos
+        query: |
+          SELECT COUNT(*) as row_count FROM dim_product
+        mustBeGreaterThan: 1000
+
+  dim_rating:
+    type: table
+    fields:
+      user_id:
+        type: string
+      product_id:
+        type: string
+      rating:
+        type: decimal
+        precision: 3
+        scale: 2
+      rating_count:
+        type: bigint
+    quality:
+      - type: sql
+        description: Média de avaliações deve estar entre 1.0 e 5.0
+        query: |
+          SELECT AVG(rating) as avg_rating FROM dim_rating
+        mustBeBetween: [0, 5]
+
+  dim_user:
+    type: table
+    fields:
+      user_id:
+        type: string
+      user_name:
+        type: string
+    quality:
+      - type: sql
+        description: Verifica se há pelo menos 500.000 usuários
+        query: |
+          SELECT COUNT(*) as row_count FROM dim_user
+        mustBeGreaterThan: 1000
+
+  fact_product_rating:
+    type: table
+    fields:
+      product_id:
+        type: string
+      product_name:
+        type: string
+      avg_rating:
+        type: double
+    quality:
+      - type: sql
+        description: Avaliação média entre 1 e 5
+        query: |
+          SELECT MIN(avg_rating) as min_rating, MAX(avg_rating) as max_rating FROM fact_product_rating
+        mustSatisfy:
+          - min_rating >= 1.0
+          - max_rating <= 5.0
+
+  fact_sales_category:
+    type: table
+    fields:
+      user_id:
+        type: string
+      category:
+        type: string
+      sales_amount:
+        type: decimal
+        precision: 20
+        scale: 2
+    quality:
+      - type: sql
+        description: Não deve haver vendas negativas
+        query: |
+          SELECT COUNT(*) as negative_sales FROM fact_sales_category WHERE sales_amount < 0
+        mustBeEqualTo: 0

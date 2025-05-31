@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: dim_product
+    description: "Dimensão de produtos extraída de stg_sales_eph"
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:  # 🎯 Completude
+          min_value: 100
+          max_value: 100000
+
+      - dbt_expectations.expect_table_columns_to_match_set:  # 🧼 Validade + 🔐 Conformidade
+          column_list: ["product_id", "product_name", "category", "about_product", "img_link", "product_link"]
+
+      - dbt_expectations.expect_table_column_count_to_equal:  # 🧼 Validade + 🔐 Conformidade
+          value: 6
+
+    columns:
+      - name: product_id
+        description: "Identificador único do produto"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null  # 🎯 Completude
+
+      - name: product_name
+        description: "Nome do produto"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null  # 🎯 Completude
+          - dbt_expectations.expect_column_value_lengths_to_be_between:  # 🧼 Validade
+              min_value: 1
+              max_value: 10000
+
+      - name: category
+        description: "Categoria do produto"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null  # 🎯 Completude

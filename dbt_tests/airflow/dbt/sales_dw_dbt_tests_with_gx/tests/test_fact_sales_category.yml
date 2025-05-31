@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: fact_sales_category
+    description: "Fato de vendas agregadas por usuário e categoria de produto"
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          min_value: 10
+          max_value: 1000000
+
+      - dbt_expectations.expect_table_column_count_to_equal:
+          value: 3
+
+      - dbt_expectations.expect_table_columns_to_match_set:
+          column_list: ["user_id", "category", "sales_amount"]
+
+    columns:
+      - name: user_id
+        description: "Identificador único do usuário"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
+
+      - name: category
+        description: "Categoria do produto"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
+          - dbt_expectations.expect_column_distinct_count_to_be_between:
+              min_value: 1
+              max_value: 100000
+
+      - name: sales_amount
+        description: "Total de vendas em reais para o par user_id e category"
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1000000

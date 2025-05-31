@@ -12,3 +12,20 @@ checks for fact_sales_category:
       warn: when > 5%
   - min(sales_amount) >= 0:
       fail: when < 0
+
+
+  - sql_metric:
+      name: sales_amount_outlier
+      query: |
+        SELECT COUNT(*) 
+        FROM fact_sales_category
+        WHERE sales_amount > 100000
+      warn: when > 0
+
+  - sql_metric:
+      name: venda_sem_categoria
+      query: |
+        SELECT COUNT(*) 
+        FROM fact_sales_category
+        WHERE category IS NULL AND sales_amount IS NOT NULL
+      fail: when > 0

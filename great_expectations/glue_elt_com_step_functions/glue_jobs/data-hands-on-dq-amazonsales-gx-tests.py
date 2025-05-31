@@ -222,7 +222,7 @@ def process_results_gx(spark, gx_result):
     result_df = spark.createDataFrame(rows, schema=schema)
     print(result_df.show(5, False))
     result_df.write.parquet(
-        "s3://cjmm-datalake-curated/mds_data_quality_results/gx_amazonsales_glue_etl/",
+        "s3://cjmm-datalake-mds-curated/mds_data_quality_results/gx_amazonsales_glue_etl/",
         mode="append",
     )
 
@@ -256,7 +256,7 @@ def process_suite_ge(spark, input_path, output_path):
 
 
 if __name__ == "__main__":
-    input_path = "s3://cjmm-datalake-curated"
+    input_path = "s3://cjmm-datalake-mds-curated"
     output_path = "s3://datadocs-greatexpectations.cjmm"
 
     spark = create_spark_session()

@@ -1,0 +1,212 @@
+dataContractSpecification: 1.1.0
+id: my-data-contract-id
+info:
+  title: My Data Contract
+  version: 0.0.1
+  description: |
+    Amazon product sales, ratings, and user dimension data curated into a lakehouse format.
+    Includes dimension and fact models for analytical use cases.
+  owner: Data Engineering Team
+  contact:
+    name: Jane Doe (Data Product Owner)
+    url: https://teams.microsoft.com/l/channel/example/data-team
+
+servers:
+  production:
+    type: s3
+    environment: prod
+    location: s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/{model}
+    format: delta
+    endpointUrl: s3.us-east-1.amazonaws.com
+    roles:
+      - name: analyst_marketing
+        description: Access to product and category sales data
+      - name: analyst_product
+        description: Access to product and rating data
+
+terms:
+  usage: |
+    Data can be used for reporting, product analysis, user behavior analytics and ML models.
+  limitations: |
+    Not suitable for real-time decision making.
+    User data must be anonymized before any external sharing.
+  policies:
+    - name: privacy-policy
+      url: https://example.com/privacy-policy
+    - name: license
+      url: https://example.com/license/5678
+  billing: 2000 USD per month
+  noticePeriod: P1M
+
+models:
+  dim_product:
+    description: Product dimension with details and links.
+    type: table
+    fields:
+      product_id:
+        type: string
+        required: true
+        unique: true
+        primaryKey: true
+      product_name:
+        type: string
+        required: true
+      category:
+        type: string
+        required: true
+      about_product:
+        type: string
+      img_link:
+        type: string
+        format: uri
+      product_link:
+        type: string
+        format: uri
+    quality:
+      - type: custom
+        engine: great-expectations
+        implementation:
+          expectation_type: expect_table_row_count_to_be_between
+          kwargs:
+            min_value: 0
+            max_value: 5
+    examples:
+      - |
+        product_id,product_name,category,about_product,img_link,product_link
+        "P001","Wireless Mouse","Electronics","Ergonomic mouse for everyday use","https://example.com/img1.jpg","https://example.com/prod1"
+
+  dim_rating:
+    description: Ratings given by users to products.
+    type: table
+    fields:
+      user_id:
+        type: string
+        required: true
+      product_id:
+        type: string
+        required: true
+        references: dim_product.product_id
+      rating:
+        type: decimal
+        precision: 3
+        scale: 2
+        required: true
+      rating_count:
+        type: bigint
+    primaryKey: [user_id, product_id]
+
+  dim_user:
+    description: Users who rated or purchased products.
+    type: table
+    fields:
+      user_id:
+        type: string
+        required: true
+        unique: true
+        primaryKey: true
+      user_name:
+        type: string
+    quality:
+      - type: custom
+        description: This is a check on model level
+        engine: soda
+        implementation:
+          type: row_count
+          must_be_greater_than: 500000
+
+  fact_product_rating:
+    description: Aggregated average rating per product.
+    type: table
+    fields:
+      product_id:
+        type: string
+        references: dim_product.product_id
+      product_name:
+        type: string
+      avg_rating:
+        type: double
+
+  fact_sales_category:
+    description: Sales amount by category and user.
+    type: table
+    fields:
+      user_id:
+        type: string
+        references: dim_user.user_id
+      category:
+        type: string
+      sales_amount:
+        type: decimal
+        precision: 20
+        scale: 2
+
+relationships:
+  - description: Each product in fact_product_rating must exist in dim_product
+    from:
+      model: fact_product_rating
+      field: product_id
+    to:
+      model: dim_product
+      field: product_id
+  - description: Each product in fact_sales_category must exist in dim_product
+    from:
+      model: fact_sales_category
+      field: category
+    to:
+      model: dim_product
+      field: category
+  - description: Each user in fact_sales_category must exist in dim_user
+    from:
+      model: fact_sales_category
+      field: user_id
+    to:
+      model: dim_user
+      field: user_id
+  - description: Each rating in dim_rating must be for a valid product in dim_product
+    from:
+      model: dim_rating
+      field: product_id
+    to:
+      model: dim_product
+      field: product_id
+  - description: Each rating in dim_rating may be aggregated in fact_product_rating
+    from:
+      model: dim_rating
+      field: product_id
+    to:
+      model: fact_product_rating
+      field: product_id
+
+servicelevels:
+  availability:
+    description: The server is available 99.9% of the time.
+    percentage: 99.9%
+  retention:
+    description: Data is retained for 1 year.
+    period: P1Y
+    unlimited: false
+  frequency:
+    description: Data is delivered daily
+    type: batch
+    interval: daily
+    cron: 0 1 * * *
+  support:
+    description: Support available during business hours.
+    time: 9am to 5pm EST
+    responseTime: 2h
+  backup:
+    description: Weekly backup on Sundays.
+    interval: weekly
+    cron: 0 0 * * 0
+    recoveryTime: 24h
+    recoveryPoint: 1 week
+
+tags:
+  - amazon
+  - sales
+  - ratings
+  - users
+  - lakehouse
+
+links:
+  datacontractCli: https://cli.datacontract.com

@@ -1,5 +1,5 @@
 {
-  "Comment": "Geração da OBT AmazonSales e Testes com Soda",
+  "Comment": "Geração da OBT AmazonSales e Testes com GX",
   "StartAt": "CreateAmazonSalesOBT",
   "States": {
     "CreateAmazonSalesOBT": {
