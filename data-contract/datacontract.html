@@ -1796,7 +1796,7 @@ Includes dimension and fact models for analytical use cases.
     <div class="sm:flex sm:flex-col">
       <div class="flex flex-col">
         <dt class="text-sm font-medium text-gray-500">Location</dt>
-        <dd class="mt-1 text-sm text-gray-900">s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/{model}</dd>
+        <dd class="mt-1 text-sm text-gray-900">s3://cjmm-mds-lake-curated/amazonsales_lakehouse/{model}</dd>
       </div>
     </div>
   </div>
@@ -1807,7 +1807,7 @@ Includes dimension and fact models for analytical use cases.
     <div class="sm:flex sm:flex-col">
       <div class="flex flex-col">
         <dt class="text-sm font-medium text-gray-500">Endpoint URL</dt>
-        <dd class="mt-1 text-sm text-gray-900">s3.us-east-1.amazonaws.com</dd>
+        <dd class="mt-1 text-sm text-gray-900">s3.us-east-2.amazonaws.com</dd>
       </div>
     </div>
   </div>
@@ -1932,6 +1932,7 @@ User data must be anonymized before any external sharing.
 	about_product string
 	img_link string
 	product_link string
+	product_descriptions string
 }
 	"**dim_rating**"{
 	user_id string
@@ -2329,6 +2330,65 @@ User data must be anonymized before any external sharing.
     <div class="py-2 text-sm">
       
       <span class="font-mono flex">product_link</span>
+    </div>
+  </td>
+  <td class="whitespace-nowrap px-1 py-2 text-sm text-gray-500 w-1/12">
+    
+    string
+    
+  </td>
+  <td class="px-3 py-2 text-sm text-gray-500 w-7/12">
+    
+    <div class="text-gray-400">No description</div>
+    
+
+    
+
+    
+
+    
+    <div>
+      
+      
+      
+      
+      <span class="inline-flex items-center rounded-md bg-gray-50 px-1 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 mr-1 mt-1">format:uri</span>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </div>
+    
+  </td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+                      
+                        
+<tr>
+  <td class="whitespace-nowrap py-2 pl-4 pr-2 text-sm font-medium text-gray-900 sm:pl-6 w-2/12">
+
+    <div class="py-2 text-sm">
+      
+      <span class="font-mono flex">product_descriptions</span>
     </div>
   </td>
   <td class="whitespace-nowrap px-1 py-2 text-sm text-gray-500 w-1/12">
@@ -3455,7 +3515,7 @@ User data must be anonymized before any external sharing.
       </div>
 
       <div class="mt-6 text-sm text-gray-400">
-        Created at 28 May 2025 22:44:34 UTC with <a href="https://cli.datacontract.com" class="text-gray-400 hover:text-gray-500">Data Contract CLI</a> v0.10.27
+        Created at 19 Jul 2025 00:32:22 UTC with <a href="https://cli.datacontract.com" class="text-gray-400 hover:text-gray-500">Data Contract CLI</a> v0.10.27
       </div>
 
     </div>
@@ -3500,8 +3560,8 @@ servers:
     type: s3
     environment: prod
     format: delta
-    endpointUrl: s3.us-east-1.amazonaws.com
-    location: s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/{model}
+    endpointUrl: s3.us-east-2.amazonaws.com
+    location: s3://cjmm-mds-lake-curated/amazonsales_lakehouse/{model}
     roles:
     - name: analyst_marketing
       description: Access to product and category sales data
@@ -3546,6 +3606,9 @@ models:
         type: string
         format: uri
       product_link:
+        type: string
+        format: uri
+      product_descriptions:
         type: string
         format: uri
     quality:

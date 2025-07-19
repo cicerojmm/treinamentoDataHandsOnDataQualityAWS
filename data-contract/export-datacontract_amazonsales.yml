@@ -6,7 +6,7 @@ info:
 servers:
   production:
     type: glue
-    account: <account>
+    account: 010840394859
     database: datahandson-dq-lakehouse-amazonsales
 models:
   dim_product:

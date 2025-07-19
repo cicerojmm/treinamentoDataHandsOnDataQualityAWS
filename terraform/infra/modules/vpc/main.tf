@@ -62,7 +62,7 @@ resource "aws_route_table_association" "private" {
 
 resource "aws_vpc_endpoint" "s3_gateway" {
   vpc_id            = aws_vpc.this.id
-  service_name      = "com.amazonaws.us-east-1.s3"
+  service_name      = "com.amazonaws.us-east-2.s3"
   vpc_endpoint_type = "Gateway"
   route_table_ids   = [aws_route_table.private.id]  # Associado à route table privada
 

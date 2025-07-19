@@ -1,0 +1,66 @@
+dataContractSpecification: 1.1.0
+id: my-data-contract-id
+info:
+  title: My Data Contract
+  version: 0.0.1
+servers:
+  production:
+    type: glue
+    account: '296735965303'
+    database: datahandson-dq-lakehouse-amazonsales
+models:
+  dim_product:
+    type: table
+    fields:
+      product_id:
+        type: string
+      product_name:
+        type: string
+      category:
+        type: string
+      about_product:
+        type: string
+      img_link:
+        type: string
+      product_link:
+        type: string
+  dim_rating:
+    type: table
+    fields:
+      user_id:
+        type: string
+      product_id:
+        type: string
+      rating:
+        type: decimal
+        precision: 3
+        scale: 2
+      rating_count:
+        type: bigint
+  dim_user:
+    type: table
+    fields:
+      user_id:
+        type: string
+      user_name:
+        type: string
+  fact_product_rating:
+    type: table
+    fields:
+      product_id:
+        type: string
+      product_name:
+        type: string
+      avg_rating:
+        type: double
+  fact_sales_category:
+    type: table
+    fields:
+      user_id:
+        type: string
+      category:
+        type: string
+      sales_amount:
+        type: decimal
+        precision: 20
+        scale: 2

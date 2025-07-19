@@ -43,6 +43,7 @@ def write_data_parquet_delta(spark, input_df, delta_table_path, primary_key):
         merge_condition = " AND ".join(
             [f"target.{col} = source.{col}" for col in primary_key_columns]
         )
+
         input_df = input_df.dropDuplicates(primary_key_columns)
 
         (
@@ -79,13 +80,13 @@ def cast_columns(df):
 
 def main():
     spark = create_spark_session()
-    df = read_data_csv(spark, "s3://cjmm-datalake-mds-raw/sales/amazon.csv")
+    df = read_data_csv(spark, "s3://cjmm-mds-lake-raw/sales/amazon.csv")
     df = cast_columns(df)
 
     write_data_parquet_delta(
         spark,
         df,
-        "s3://cjmm-datalake-mds-staged/amazonsales_lakehouse/stg_amazonsales",
+        "s3://cjmm-mds-lake-staged/amazonsales_lakehouse/stg_amazonsales",
         "product_id",
     )
 

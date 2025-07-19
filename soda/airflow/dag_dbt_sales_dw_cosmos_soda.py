@@ -36,7 +36,7 @@ from utils import utils
 conn = BaseHook.get_connection("aws_default")
 aws_access_key = conn.login
 aws_secret_key = conn.password
-aws_region = "us-east-1"
+aws_region = "us-east-2"
 
 CONNECTION_ID = "redshift_default"
 DB_NAME = "amazonsales"
@@ -70,7 +70,7 @@ def gravar_resultados_soda_s3(data):
     df = pd.DataFrame(checks_data)
     df["datetime"] = datetime_tests
 
-    s3_bucket = "cjmm-datalake-mds-curated"
+    s3_bucket = "cjmm-mds-lake-curated"
     s3_path = (
         f"mds_data_quality_results/soda_amazonsales_airflow/{uuid.uuid4().hex}.parquet"
     )

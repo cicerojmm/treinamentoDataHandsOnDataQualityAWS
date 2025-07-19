@@ -9,13 +9,13 @@ def get_aws_credentials():
     conn = BaseHook.get_connection("aws_default")
     aws_access_key = conn.login
     aws_secret_key = conn.password
-    aws_region = "us-east-1"
+    aws_region = "us-east-2"
 
     return aws_access_key, aws_secret_key, aws_region
 
 
 def enviar_notificacao_sns(origem, pipeline, validacao, detalhes):
-    topic_arn = "arn:aws:sns:us-east-1:<account>:data-handson-dq-alerts-dev"
+    topic_arn = "arn:aws:sns:us-east-2:<account>:data-handson-dq-alerts-dev"
     message_data = {
         "origem": origem,
         "pipeline": pipeline,

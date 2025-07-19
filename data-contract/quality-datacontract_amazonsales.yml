@@ -6,9 +6,9 @@ info:
 servers:
   production:
     type: s3
-    location: s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/{model}
+    location: s3://cjmm-mds-lake-curated/amazonsales_lakehouse/{model}
     format: delta
-    endpointUrl: s3.us-east-1.amazonaws.com
+    endpointUrl: s3.us-east-2.amazonaws.com
 
 models:
   dim_product:

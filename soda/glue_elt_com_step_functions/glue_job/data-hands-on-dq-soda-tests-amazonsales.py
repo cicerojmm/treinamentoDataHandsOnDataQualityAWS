@@ -151,7 +151,7 @@ def write_results_to_s3(spark, checks_data, schema, output_path):
 
 def main():
     spark = create_spark_session()
-    df = read_data(spark, "s3://cjmm-datalake-mds-curated/data-hands-on-df-soda-amazon-sales-obt")
+    df = read_data(spark, "s3://cjmm-mds-lake-curated/data-hands-on-df-soda-amazon-sales-obt/20250716")
     
     scan = configure_soda_scan(spark)
     add_soda_checks(scan)
@@ -162,7 +162,7 @@ def main():
     
     checks_data, schema = process_scan_results(results)
     
-    write_results_to_s3(spark, checks_data, schema, "s3://cjmm-datalake-mds-curated/mds_data_quality_results/soda_amazonsales_spark")
+    write_results_to_s3(spark, checks_data, schema, "s3://cjmm-mds-lake-curated/mds_data_quality_results/soda_amazonsales_spark")
 
 if __name__ == "__main__":
     main()

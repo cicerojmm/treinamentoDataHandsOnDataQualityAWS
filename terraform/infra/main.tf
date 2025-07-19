@@ -14,7 +14,7 @@ module "vpc_public" {
   vpc_cidr              = "10.0.0.0/16"
   public_subnet_cidrs   = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnet_cidrs  = ["10.0.3.0/24", "10.0.4.0/24"]
-  availability_zones    = ["us-east-1a", "us-east-1b"]
+  availability_zones    = ["us-east-2a", "us-east-2b"]
 }
 
 ###############################################################################
@@ -38,39 +38,39 @@ module "redshift" {
 ##############################################################################
 ########             INSTANCIAS EC2                              #############
 ##############################################################################
-# module "ec2_instance" {
-#   source             =  "./modules/ec2"
-#   ami_id              = "ami-04b4f1a9cf54c11d0"
-#   instance_type       = "t3a.2xlarge"
-#   subnet_id           = module.vpc_public.public_subnet_ids[0]
-#   vpc_id              = module.vpc_public.vpc_id
-#   key_name            = "conta-aws-mds"
-#   associate_public_ip = true
-#   instance_name       = "data-handson-mds-ec2-${var.environment}"
+module "ec2_instance" {
+  source             =  "./modules/ec2"
+  ami_id              = "ami-04b4f1a9cf54c11d0"
+  instance_type       = "t3a.2xlarge"
+  subnet_id           = module.vpc_public.public_subnet_ids[0]
+  vpc_id              = module.vpc_public.vpc_id
+  key_name            = "cjmm-datahandson-cb"
+  associate_public_ip = true
+  instance_name       = "data-handson-mds-ec2-${var.environment}"
   
-#   user_data = templatefile("${path.module}/scripts/bootstrap/ec2_bootstrap.sh", {})
+  user_data = templatefile("${path.module}/scripts/bootstrap/ec2_bootstrap.sh", {})
 
-#   ingress_rules = [
-#     {
-#       from_port   = 22
-#       to_port     = 22
-#       protocol    = "tcp"
-#       cidr_blocks = ["0.0.0.0/0"]
-#     },
-#     {
-#       from_port   = 80
-#       to_port     = 80
-#       protocol    = "tcp"
-#       cidr_blocks = ["0.0.0.0/0"]
-#     },
-#     {
-#       from_port   = 443
-#       to_port     = 443
-#       protocol    = "tcp"
-#       cidr_blocks = ["0.0.0.0/0"]
-#     }
-#   ]
-# }
+  ingress_rules = [
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
 
 
 ##############################################################################
@@ -79,7 +79,7 @@ module "redshift" {
 module "mwaa" {
   source                = "./modules/mwaa"
   environment_name      = "datahandson-mds-mwaa"
-  s3_bucket_arn         = "arn:aws:s3:::cjmm-datalake-mds-mwaa"
+  s3_bucket_arn         = "arn:aws:s3:::cjmm-mds-lake-mwaa"
   airflow_version       = "2.10.3"
   environment_class     = "mw1.small"
   min_workers           = 1
@@ -183,6 +183,42 @@ module "glue_jobs_dgq" {
   }
 }
 
+module "glue_jobs_gdq_s3tables" {
+  source = "./modules/glue-job"
+
+  project_name      = "data-handson-dq-s3-tablesgdq"
+  environment       = var.environment
+  region            = var.region
+  s3_bucket_scripts = var.s3_bucket_scripts
+  s3_bucket_data    = var.s3_bucket_raw
+  scripts_local_path = "scripts/glue_etl/glue_data_quality_s3tables"
+  
+  job_scripts = {
+    "data-hands-on-dq-amazonsales-dw-table-stg-s3tables" = "data-hands-on-dq-amazonsales-dw-table-stg-s3tables.py",
+    "data-hands-on-dq-amazonsales-dw-dim-product-s3tables" = "data-hands-on-dq-amazonsales-dw-dim-product-s3tables.py",
+    "data-hands-on-dq-amazonsales-dw-dim-rating-s3tables" = "data-hands-on-dq-amazonsales-dw-dim-rating-s3tables.py",
+    "data-hands-on-dq-amazonsales-dw-dim-user-s3tables" = "data-hands-on-dq-amazonsales-dw-dim-user-s3tables.py",
+    "data-hands-on-dq-amazonsales-dw-dims-s3tables-gdq" = "data-hands-on-dq-amazonsales-dw-dims-s3tables-gdq.py",
+    "data-hands-on-dq-amazonsales-dw-fact-product-rating-s3tables" = "data-hands-on-dq-amazonsales-dw-fact-product-rating-s3tables.py",
+    "data-hands-on-dq-amazonsales-dw-fact-sales-category-s3tables" = "data-hands-on-dq-amazonsales-dw-fact-sales-category-s3tables.py",
+    "data-hands-on-dq-amazonsales-dw-facts-s3tables-gdq" = "data-hands-on-dq-amazonsales-dw-facts-s3tables-gdq.py",
+  }
+  
+  worker_type       = "G.1X"
+  number_of_workers = 3
+  timeout           = 60
+  max_retries       = 0
+  
+  extra_jars = "s3://cjmm-mds-lake-configs/jars/s3-tables-catalog-for-iceberg-0.1.7.jar"
+
+  
+  additional_arguments = {
+    "--enable-glue-datacatalog" = "true"
+    "--user-jars-first"         = "true"
+    "--datalake-formats"        = "iceberg"
+  }
+}
+
 ###############################################################################
 #########            GLUE CRAWLER                                #############
 ###############################################################################
@@ -218,7 +254,7 @@ module "lambda_alert_dataquality" {
   source_code_file = "alert-dataquality-sqs-discord.py"
   
   environment_variables = {
-    DISCORD_WEBHOOK_URL = "<webhook_url_placeholder>"
+    DISCORD_WEBHOOK_URL = ""
   }
   
   # Subscribe to the SNS topic
@@ -306,6 +342,10 @@ module "step_functions" {
     },
     "datahandson-dq-amazonsales-gdq" = {
       definition_file = "sfn_definition_gdq.json"
+      type            = "STANDARD"
+    },
+    "datahandson-dq-amazonsales-s3tables-gdq" = {
+      definition_file = "sfn_definition_s3tables_gdq.json"
       type            = "STANDARD"
     }
   }

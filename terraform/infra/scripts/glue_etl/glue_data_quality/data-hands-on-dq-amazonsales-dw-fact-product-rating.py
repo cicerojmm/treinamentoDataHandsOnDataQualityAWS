@@ -76,8 +76,8 @@ def gerar_dim_product_rating(spark, path_dim, path_stg_sales):
 
 def main():
     spark = create_spark_session()
-    path_stg_sales = "s3://cjmm-datalake-mds-staged/amazonsales_lakehouse/stg_amazonsales"
-    path_data = "s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/"
+    path_stg_sales = "s3://cjmm-mds-lake-staged/amazonsales_lakehouse/stg_amazonsales"
+    path_data = "s3://cjmm-mds-lake-curated/amazonsales_lakehouse/"
 
     df_result = gerar_dim_product_rating(spark, path_data, path_stg_sales)
 

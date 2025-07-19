@@ -5,6 +5,8 @@ from delta.tables import DeltaTable
 from awsgluedq.transforms import EvaluateDataQuality
 from awsglue.transforms import SelectFromCollection
 
+
+
 RULESETS = {
     "dim_user": '''
         Rules = [
@@ -84,7 +86,7 @@ def aplicar_regras_dq(df, glueContext, nome_contexto, ruleset):
             "dataQualityEvaluationContext": nome_contexto,
             "enableDataQualityCloudWatchMetrics": True,
             "enableDataQualityResultsPublishing": True,
-            "resultsS3Prefix": "s3://cjmm-datalake-mds-curated/mds_data_quality_results/glue_dq",
+            "resultsS3Prefix": "s3://cjmm-mds-lake-curated/mds_data_quality_results/glue_dq",
         },
         additional_options={"performanceTuning.caching": "CACHE_NOTHING"},
     )
@@ -100,10 +102,15 @@ def aplicar_regras_dq(df, glueContext, nome_contexto, ruleset):
     print(dqResults.printSchema())
     dqResults.show(truncate=False)
 
+    dict_results = dqResults.select("Outcome").collect()
+
+    if  "Failed" in dict_results:
+        enviar_msg_discord()
+
 def main():
     spark = create_spark_session()
     glueContext = GlueContext(spark.sparkContext)
-    path_data = "s3://cjmm-datalake-mds-curated/amazonsales_lakehouse"
+    path_data = "s3://cjmm-mds-lake-curated/amazonsales_lakehouse"
 
     tabelas = ler_dimensoes(spark, path_data)
 

@@ -52,7 +52,7 @@ def write_data_parquet_delta(spark, input_df, delta_table_path, primary_key):
 
 def main():
     spark = create_spark_session()
-    df = spark.read.format("delta").load("s3://cjmm-datalake-mds-staged/amazonsales_lakehouse/stg_amazonsales")
+    df = spark.read.format("delta").load("s3://cjmm-mds-lake-staged/amazonsales_lakehouse/stg_amazonsales")
 
     df_dim_rating = (
         df.select(
@@ -67,7 +67,7 @@ def main():
     write_data_parquet_delta(
         spark,
         df_dim_rating,
-        "s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/dim_rating",
+        "s3://cjmm-mds-lake-curated/amazonsales_lakehouse/dim_rating",
         "product_id,user_id",
     )
 

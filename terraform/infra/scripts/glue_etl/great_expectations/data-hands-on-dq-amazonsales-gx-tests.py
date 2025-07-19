@@ -222,7 +222,7 @@ def read_data(spark, file_path):
 #     result_df = spark.createDataFrame(rows, schema=schema)
 #     print(result_df.show(5, False))
 #     result_df.write.parquet(
-#         "s3://cjmm-datalake-mds-curated/mds_data_quality_results/gx_amazonsales_glue_etl/",
+#         "s3://cjmm-mds-lake-curated/mds_data_quality_results/gx_amazonsales_glue_etl/",
 #         mode="append",
 #     )
 
@@ -254,8 +254,8 @@ def process_suite_ge(spark, input_path, output_path):
 
 
 if __name__ == "__main__":
-    input_path = "s3://cjmm-datalake-mds-curated"
-    output_path = "s3://datadocs-greatexpectations.cjmm.datahandsonmds"
+    input_path = "s3://cjmm-mds-lake-curated"
+    output_path = "s3://datadocs-greatexpectations.cjmm.mds"
 
     spark = create_spark_session()
     process_suite_ge(spark, input_path, output_path)

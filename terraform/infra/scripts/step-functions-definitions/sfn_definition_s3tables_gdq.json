@@ -1,0 +1,156 @@
+{
+    "Comment": "Orquestração ETL Glue Amazon Sales com GDQ",
+    "StartAt": "stg_table",
+    "States": {
+      "stg_table": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "data-hands-on-dq-amazonsales-dw-table-stg-s3tables",
+          "Arguments": {
+            "--input_path": "s3://cjmm-mds-lake-raw/sales/amazon.csv",
+            "--iceberg_table": "stg_amazonsales",
+            "--namespace": "staged",
+            "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables",
+            "--primary_key": "product_id"
+          }
+        },
+        "Next": "parallel_dims"
+      },
+      "parallel_dims": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt": "dim_product",
+            "States": {
+              "dim_product": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "data-hands-on-dq-amazonsales-dw-dim-product-s3tables",
+                  "Arguments": {
+                    "--stg_table_sales": "staged.stg_amazonsales",
+                    "--output_table": "dim_product",
+                    "--namespace_destino": "datawarehouse",
+                    "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables"
+                  }
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "dim_rating",
+            "States": {
+              "dim_rating": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "data-hands-on-dq-amazonsales-dw-dim-rating-s3tables",
+                  "Arguments": {
+                    "--stg_table_sales": "staged.stg_amazonsales",
+                    "--output_table": "dim_rating",
+                    "--namespace_destino": "datawarehouse",
+                    "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables"
+                  }
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "dim_user",
+            "States": {
+              "dim_user": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "data-hands-on-dq-amazonsales-dw-dim-user-s3tables",
+                  "Arguments": {
+                    "--stg_table_sales": "staged.stg_amazonsales",
+                    "--output_table": "dim_user",
+                    "--namespace_destino": "datawarehouse",
+                    "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables"
+                  }
+                },
+                "End": true
+              }
+            }
+          }
+        ],
+        "Next": "dims_glue_data_quality"
+      },
+      "dims_glue_data_quality": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "data-hands-on-dq-amazonsales-dw-dims-s3tables-gdq",
+          "Arguments": {
+            "--namespace": "datawarehouse",
+            "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables"
+          }
+        },
+        "Next": "parallel_facts"
+      },
+      "parallel_facts": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt": "fact_product_rating",
+            "States": {
+              "fact_product_rating": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "data-hands-on-dq-amazonsales-dw-fact-product-rating-s3tables",
+                  "Arguments": {
+                    "--stg_table_sales": "staged.stg_amazonsales",
+                    "--dim_product_table": "datawarehouse.dim_product",
+                    "--dim_rating_table": "datawarehouse.dim_rating",
+                    "--output_table": "fact_product_rating",
+                    "--namespace_destino": "datawarehouse",
+                    "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables"
+                  }
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "fact_sales_category",
+            "States": {
+              "fact_sales_category": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "data-hands-on-dq-amazonsales-dw-fact-sales-category-s3tables",
+                  "Arguments": {
+                    "--stg_table_sales": "staged.stg_amazonsales",
+                    "--dim_product_table": "datawarehouse.dim_product",
+                    "--dim_user_table": "datawarehouse.dim_user",
+                    "--output_table": "fact_sales_category",
+                    "--namespace_destino": "datawarehouse",
+                    "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables"
+                  }
+                },
+                "End": true
+              }
+            }
+          }
+        ],
+        "Next": "facts_glue_data_quality"
+      },
+      "facts_glue_data_quality": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "data-hands-on-dq-amazonsales-dw-facts-s3tables-gdq",
+          "Arguments": {
+            "--namespace": "datawarehouse",
+            "--s3_tables_bucket_arn": "arn:aws:s3tables:us-east-2:296735965303:bucket/data-hands-on-dq-s3tables"
+          }
+        },
+        "End": true
+      }
+    }
+  }

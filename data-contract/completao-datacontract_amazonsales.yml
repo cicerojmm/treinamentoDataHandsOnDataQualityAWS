@@ -15,9 +15,9 @@ servers:
   production:
     type: s3
     environment: prod
-    location: s3://cjmm-datalake-mds-curated/amazonsales_lakehouse/{model}
+    location: s3://cjmm-mds-lake-curated/amazonsales_lakehouse/{model}
     format: delta
-    endpointUrl: s3.us-east-1.amazonaws.com
+    endpointUrl: s3.us-east-2.amazonaws.com
     roles:
       - name: analyst_marketing
         description: Access to product and category sales data
@@ -60,6 +60,9 @@ models:
         type: string
         format: uri
       product_link:
+        type: string
+        format: uri
+      product_descriptions:
         type: string
         format: uri
     quality:

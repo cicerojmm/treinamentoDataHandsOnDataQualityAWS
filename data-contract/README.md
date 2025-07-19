@@ -25,7 +25,7 @@ O comando abaixo importa metadados de um banco de dados do AWS Glue para um arqu
 ```bash
 docker run --rm \
   -v ${PWD}:/home/datacontract \
-  -e AWS_DEFAULT_REGION=us-east-1 \
+  -e AWS_DEFAULT_REGION=us-east-2 \
   -e AWS_ACCESS_KEY_ID=<SUA_ACCESS_KEY> \
   -e AWS_SECRET_ACCESS_KEY=<SUA_SECRET_KEY> \
   datacontract/cli import \
@@ -41,7 +41,7 @@ Para validar um contrato de dados contra um servidor de produção:
 ```bash
 docker run --rm \
   -v ${PWD}:/home/datacontract \
-  -e DATACONTRACT_S3_REGION=us-east-1 \
+  -e DATACONTRACT_S3_REGION=us-east-2 \
   -e DATACONTRACT_S3_ACCESS_KEY_ID='<SUA_ACCESS_KEY>' \
   -e DATACONTRACT_S3_SECRET_ACCESS_KEY='<SUA_SECRET_KEY>' \
   -e DATACONTRACT_S3_SESSION_TOKEN='' \

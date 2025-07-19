@@ -67,11 +67,11 @@ def process_gx_result(asset_name: str, **kwargs):
     ]
 
     df = pd.DataFrame(rows)
-    utils.salvar_dados_s3(
-        df,
-        "cjmm-datalake-mds-curated",
-        f"mds_data_quality_results/gx_amazonsales_airflow/{uuid.uuid4().hex}.parquet",
-    )
+    # utils.salvar_dados_s3(
+    #     df,
+    #     "cjmm-mds-lake-curated",
+    #     f"mds_data_quality_results/gx_amazonsales_airflow/{uuid.uuid4().hex}.parquet",
+    # )
 
     # Retorna o dataframe em forma de dict para uso posterior
     return df.to_dict(orient="records")
@@ -89,7 +89,7 @@ def aggregate_results(**kwargs):
     df = pd.DataFrame(all_results)
     utils.salvar_dados_s3(
         df,
-        "cjmm-datalake-mds-curated",
+        "cjmm-mds-lake-curated",
         f"mds_data_quality_results/gx_amazonsales_airflow/final_{uuid.uuid4().hex}.parquet",
     )
 

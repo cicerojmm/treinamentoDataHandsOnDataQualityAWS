@@ -79,13 +79,13 @@ def cast_columns(df):
 
 def main():
     spark = create_spark_session()
-    df = read_data_csv(spark, "s3://cjmm-datalake-mds-raw/sales/amazon.csv")
+    df = read_data_csv(spark, "s3://cjmm-mds-lake-raw/sales/amazon.csv")
     df = cast_columns(df)
 
     write_data_parquet_delta(
         spark,
         df,
-        "s3://cjmm-datalake-mds-curated/data-hands-on-df-gx-amazon-sales-obt",
+        "s3://cjmm-mds-lake-curated/data-hands-on-df-gx-amazon-sales-obt",
         "product_id",
     )
 
